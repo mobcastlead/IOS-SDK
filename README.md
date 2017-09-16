@@ -1,6 +1,6 @@
-# MobcastleAd IOS SDK 接入指南
+# MobcastleAd SDK 接入指南
 
-标签（空格分隔）： mc 
+标签： mc 
 
 ---
 ### 1. 简介
@@ -21,8 +21,8 @@ AdSdk.bundle         //SDK所需资源文件
 AdSdk.framework      //SDK框架
 ```
 
-### 3. SDK 接入说明
-#### 3.1 APP设置
+#### 2.2 SDK 接入说明
+##### 2.2.1 APP设置
 
 - 于项目中 Build Phases -> Link Binary With Libraries -> add AdSdk.framework AdSdk.bundle
 
@@ -40,7 +40,7 @@ AdSdk.framework      //SDK框架
     </dict>
 ```
 
-#### 3.2 使用指南
+##### 2.2.1 使用指南
 - SDK初始化，SDK在正式使用之前，需要pulisherId,appId,publisherToken进行初始化
 
 ```
@@ -82,5 +82,35 @@ APP启动时候，可以请求插屏广告
 - 请求横幅广告
 参照demo了解
 
-#### 3.3 注意事项
+##### 2.2.2 注意事项
 - 广告请求后会在3s内返回，若3s未返回广告，则该次广告请求将不会展示广告。
+
+### 3. Web站点  JavaScript SDK 简介
+原生javascript，初始化js对象
+获取广告，并进行曝光，点击跳转落地页
+
+#### 3.1 接入流程
+- 于MC流量平台注册广告位
+- MC平台提供广告位的JS代码，放置您的网站中。
+
+#### 3.2 示例
+- js代码样式
+```
+/**
+ *  <div id="MDRS" style="width: 640px; height: 100px; position: relative;" >
+ *  id="MDRS" 固定值；
+ *
+ *  position: relative; style样式中的固定值；
+ *
+ *  width: 640px; height: 100px; 用户自定义的广告区域（横幅比例，如6:1/3:1之类等）；
+ *
+ * <script type='text/javascript' src="http://ng.mobcastlead.com/mrc.js"></script> 加载js对象；
+ *
+ * <script> mobcastlead("b61a48df20e7a6102ff05dbca11aeae7")</script>请求广告，"b61a48df20e7a6102ff05dbca11aeae7"由MC流量平台提供；
+ */
+<div id="MDRS" style="width: 640px; height: 100px; position: relative;" >
+    <script type='text/javascript' src="http://ng.mobcastlead.com/mrc.js"></script>
+    <script> mobcastlead("b61a48df20e7a6102ff05dbca11aeae7")</script>
+</div>
+```
+
