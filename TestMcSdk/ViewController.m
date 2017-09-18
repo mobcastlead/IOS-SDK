@@ -56,45 +56,48 @@ static BOOL AdSDKBannerInitFlag = NO;
     // Dispose of any resources that can be recreated.
 }
 
--(void) initBannerAndInterstitalButton{
-    //进入软件  初始化横幅插屏
-    UINavigationBar *navBar = [[UINavigationBar alloc]initWithFrame:CGRectMake(0, 20, self.view.bounds.size.width, 40)];
-    UINavigationItem *navItem = [[UINavigationItem alloc]initWithTitle:@"Demo"];
-    [navBar pushNavigationItem:navItem animated:YES];
-    [self.view addSubview:navBar];
-    
-    UIButton *btnBanner = [UIButton buttonWithType:UIButtonTypeCustom];
-    btnBanner.frame = CGRectMake(5, 65, 90, 40);
-    btnBanner.backgroundColor = [UIColor blueColor];
-    [btnBanner setTitle:@"横幅" forState:UIControlStateNormal];
-    [btnBanner addTarget:self action:@selector(bannerAdShow) forControlEvents: UIControlEventTouchUpInside];
-    [self.view addSubview:btnBanner];
-    
-    UIButton *btnInter = [UIButton buttonWithType:UIButtonTypeCustom];
-    btnInter.frame = CGRectMake(100, 65, 90, 40);
-    btnInter.backgroundColor = [UIColor blueColor];
-    [btnInter setTitle:@"插屏" forState:UIControlStateNormal];
-    [btnInter addTarget:self action:@selector(interstitalAdShow) forControlEvents: UIControlEventTouchUpInside];
-    [self.view addSubview:btnInter];
-    
-    self.banner = [AdSdk initWithFrame:CGRectMake(0, self.view.bounds.size.height-120, self.view.bounds.size.width, 80) adposid:ADSDK_BANNER_ID delegate:self];
-    
-    self.interstital = [AdSdk interstitalInitWithFrame:CGRectMake(0,0,301,460) adposid:ADSDK_INTERSTITAL_ID delegate: self];
-}
-
-//开屏广告，初始化结果delegate
 -(void)splashInitResult:(NSInteger)code{
     NSLog(@"splash initResult Code: %ld", (long)code);
     if (code == (NSInteger)AdSdkSlotInitSuccess) {
+        [self initAdButton];
         
-        [self initBannerAndInterstitalButton];
+        //回主线程渲染UI
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.view addSubview:self.splash];
+            [self.splash load];
+        });
         
-        //展示开屏广告
-        [self.view addSubview:self.splash];
-        [self.splash load];
     }else{
-        [self initBannerAndInterstitalButton];
+        [self initAdButton];
     }
+}
+
+-(void)initAdButton{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        //进入软件  初始化横幅插屏
+        UINavigationBar *navBar = [[UINavigationBar alloc]initWithFrame:CGRectMake(0, 20, self.view.bounds.size.width, 40)];
+        UINavigationItem *navItem = [[UINavigationItem alloc]initWithTitle:@"Demo"];
+        [navBar pushNavigationItem:navItem animated:YES];
+        [self.view addSubview:navBar];
+        
+        UIButton *btnBanner = [UIButton buttonWithType:UIButtonTypeCustom];
+        btnBanner.frame = CGRectMake(5, 65, 90, 40);
+        btnBanner.backgroundColor = [UIColor blueColor];
+        [btnBanner setTitle:@"横幅" forState:UIControlStateNormal];
+        [btnBanner addTarget:self action:@selector(bannerAdShow) forControlEvents: UIControlEventTouchUpInside];
+        [self.view addSubview:btnBanner];
+        
+        UIButton *btnInter = [UIButton buttonWithType:UIButtonTypeCustom];
+        btnInter.frame = CGRectMake(100, 65, 90, 40);
+        btnInter.backgroundColor = [UIColor blueColor];
+        [btnInter setTitle:@"插屏" forState:UIControlStateNormal];
+        [btnInter addTarget:self action:@selector(interstitalAdShow) forControlEvents: UIControlEventTouchUpInside];
+        [self.view addSubview:btnInter];
+        
+        self.banner = [AdSdk initWithFrame:CGRectMake(0, self.view.bounds.size.height-120, self.view.bounds.size.width, 80) adposid:ADSDK_BANNER_ID delegate:self];
+        
+        self.interstital = [AdSdk interstitalInitWithFrame:CGRectMake(0,0,301,460) adposid:ADSDK_INTERSTITAL_ID delegate:self];
+    });
 }
 
 -(void)bannerAdShow{
@@ -102,13 +105,9 @@ static BOOL AdSDKBannerInitFlag = NO;
         NSLog(@"横幅广告位展示");
         [self.view addSubview:self.banner];
         [self.banner load];
-    }
-}
-
--(void)bannerInitResult:(NSInteger)code{
-    NSLog(@"banner initResult Code: %ld", (long)code);
-    if (code == (NSInteger)AdSdkSlotInitSuccess) {
-        AdSDKBannerInitFlag = true;
+    }else{
+        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"初始化" message: @"横幅广告初始化中..." delegate:nil cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
+        [alert show];
     }
 }
 
@@ -117,6 +116,15 @@ static BOOL AdSDKBannerInitFlag = NO;
     [self.interstital load];
 }
 
+-(void)bannerInitResult:(NSInteger)code{
+    NSLog(@"banner initResult Code: %ld", (long)code);
+    if (code == (NSInteger)AdSdkSlotInitSuccess) {
+        AdSDKBannerInitFlag = true;
+        //        [self.view addSubview:self.banner];
+        //
+        //        [self.banner load];
+    }
+}
 
 -(void)bannerDidLoading{
     NSLog(@"banner will loading");
